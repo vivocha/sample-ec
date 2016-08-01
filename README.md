@@ -13,14 +13,15 @@ $ cd sample-ec
 $ npm install
 ```
 
-And then modify the [accountid] in the vivocha script inside the index.html with your vivocha account
+And then replace [accountid] in the Vivocha script url with your Vivocha account id.
 
-\<script src="https://www.vivocha.com/a/[accountid]/js/vivocha_ec.js">\</script>
+```html
+<script src="https://www.vivocha.com/a/[accountid]/js/vivocha_ec.js"></script>
+```
 
 ### Usage:
 ```sh
 ./server -a <accountid> -u <userid> -p <password> -r <agentid> -H <host> [-P <port>]
 ```
 
-###
-http://host:port/
+You can reach the sample agent console app in your browser from the following url: http://host:port/
