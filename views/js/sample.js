@@ -1,7 +1,21 @@
 $("#tabs").tabs().hide();
 var socket = io();
-
-consoles = [];
+var currentMedia = {
+  source: vivocha.channel().id,
+  load: 0.0,
+  paused: false,
+  media_sessions: {},
+  assigned: {},
+  assigned_count: 0,
+  pending: {},
+  pending_count: 0,
+  idle: {},
+  idle_count: 0,
+  available_media: ['chat','voice','video'],
+  busy_media: [],
+  weights: {}
+};
+var consoles = [];
 
 function manageConsole(econsole) {
   console.log('VivochaEmbeddedConsole', econsole.id, 'ready');
@@ -61,4 +75,30 @@ socket.on('token', function(msg){
   } else {
     console.error('invalid token');
   }
+});
+
+$('#pause').click(function () {
+  var $this = $(this);
+  if ($this.hasClass('disabled')) {
+    $this.removeClass('disabled');
+    currentMedia.paused = false;
+  } else {
+    $this.addClass('disabled');
+    currentMedia.paused = 'user';
+  }
+  vivocha.updateDeltaLoad(currentMedia, true);
+});
+$('#chat, #voice, #video').click(function () {
+  var $this = $(this);
+  var id = this.id;
+  if ($this.hasClass('disabled')) {
+    $this.removeClass('disabled');
+    currentMedia.available_media.push(id)
+  } else {
+    $this.addClass('disabled');
+    $.grep(currentMedia.available_media, function(value) {
+      return value != id;
+    });
+  }
+  vivocha.updateDeltaLoad(currentMedia);
 });

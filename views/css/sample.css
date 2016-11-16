@@ -4,6 +4,17 @@ body { font: 13px Helvetica, Arial; }
 #messages li { padding: 5px 10px; }
 #messages li:nth-child(odd) { background: #eee; }
 
+#controls button {
+    width: 32px;
+    height: 32px;
+    background-color: #99ff99;
+    color: #aaaabb;
+}
+
+#controls button.disabled {
+    background-color: #ffff99;
+}
+
 #tabs {
     display: none;
     width: auto;
@@ -13,7 +24,7 @@ body { font: 13px Helvetica, Arial; }
     left: 10px;
     margin: 0;
     bottom: 40px;
-    top: 40px;
+    top: 80px;
 }
 
 #tabs div.contact {
