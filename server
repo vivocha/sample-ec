@@ -25,8 +25,8 @@ program
   .option('-r, --agent <agent>', 'Vivocha agent id to which the token is created')
   .option('-H, --host <host>', 'Webhook host (host must be reachable from the internet)')
   .option('-P, --port [port]', 'Webhook port (default: 80, 443 if https is enabled)')
-  .option('-k, --key <key>', 'HTTPS key')
-  .option('-c, --cert <cert>', 'HTTPS cert')
+  .option("-k, --key <key>", 'HTTPS key file (if key and certificate are provided the server will listen in HTTPS mode)')
+  .option('-c, --cert <cert>', 'HTTPS certificate file (if key and certificate are provided the server will listen in HTTPS mode)')
   .parse(process.argv);
 
 if (!program.account) requiredArgument('account');
@@ -242,7 +242,7 @@ io.on('connection', function(socket){
 });
 
 http.listen(__localport, function(){
-  console.log('listening on *:' + __localport);
+  console.log('listening on ' + mode + ' *:' + __localport);
   subscribeToVivocha();
   registerMediaToVivocha();
 });
