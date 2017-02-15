@@ -6,10 +6,10 @@ var express = require('express')
   , program = require('commander')
   , crypto = require('crypto')
   , util = require('util')
+  , fs = require('fs')
   , request = require('request')
   , app = express()
-  , http = require('http').Server(app)
-  , io = require('socket.io')(http)
+  , mode = 'http'
 
 function requiredArgument(arg) {
   console.error('\n  ' + arg + ' argument is required');
@@ -24,7 +24,9 @@ program
   .option('-p, --password <password>', 'Vivocha user password')
   .option('-r, --agent <agent>', 'Vivocha agent id to which the token is created')
   .option('-H, --host <host>', 'Webhook host (host must be reachable from the internet)')
-  .option('-P, --port [port]', 'Webhook port (default: 80)')
+  .option('-P, --port [port]', 'Webhook port (default: 80, 443 if https is enabled)')
+  .option('-k, --key <key>', 'HTTPS key')
+  .option('-c, --cert <cert>', 'HTTPS cert')
   .parse(process.argv);
 
 if (!program.account) requiredArgument('account');
@@ -33,8 +35,21 @@ if (!program.password) requiredArgument('password');
 if (!program.agent) requiredArgument('agent');
 if (!program.host) requiredArgument('host');
 
+if (program.key && program.cert) {
+  mode = 'https';
+  http = require('https').createServer(
+    {
+      key: fs.readFileSync(program.key),
+      cert: fs.readFileSync(program.cert)
+    }, app)
+} else {
+  http = require('http').Server(app)
+}
+
+var io = require('socket.io')(http)
+
 // application global parameters
-var __localport = program.port || 80       // local listen port
+var __localport = program.port || (mode === 'http' ? 80 : 443)       // local listen port
   , __host = program.port ? (program.host + ':' + program.port) : program.host;  // host this must be reachable from the internet
 
 var __vvcAcct = program.account         // your vivocha account
@@ -43,8 +58,8 @@ var __vvcAcct = program.account         // your vivocha account
   , __vvcHost = "m1.vivocha.com"        // your vivocha host (usually www.vivocha.com)
   , __vvcPath = "/a/" + __vvcAcct + "/api/_/"
   , __vvcAgent = program.agent          // the agent id
-  , webhookUrl = "http://"+__host+"/vivochaEvents"
-  , registerMediaUrl = "http://"+__host+"/vivochaAgents"
+  , webhookUrl = mode + "://"+__host+"/vivochaEvents"
+  , registerMediaUrl = mode + "://"+__host+"/vivochaAgents"
   , subscribeParams = {
       url: webhookUrl,
       external_routing: 1, // If true this param stops the propagation of the new event to the agents
