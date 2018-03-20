@@ -1,5 +1,5 @@
 {
-  "name": "vvc-sample-ec",
+  "name": "@vivocha/sample-ec",
   "version": "1.0.0",
   "description": "Vivocha Emebedded Console sample application",
   "dependencies": {

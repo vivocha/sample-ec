@@ -4,7 +4,6 @@ var express = require('express')
   , bodyParser = require('body-parser')
   , querystring = require('querystring')
   , program = require('commander')
-  , crypto = require('crypto')
   , util = require('util')
   , fs = require('fs')
   , request = require('request')
@@ -55,7 +54,7 @@ var __localport = program.port || (mode === 'http' ? 80 : 443)       // local li
 var __vvcAcct = program.account         // your vivocha account
   , __vvcUser = program.user            // your vivocha userid
   , __vvcPass = program.password        // your vivocha password
-  , __vvcHost = "m1.vivocha.com"        // your vivocha host (usually www.vivocha.com)
+  , __vvcHost = "n1.vivocha.com"        // your vivocha host (usually www.vivocha.com)
   , __vvcPath = "/a/" + __vvcAcct + "/api/_/"
   , __vvcAgent = program.agent          // the agent id
   , webhookUrl = mode + "://"+__host+"/vivochaEvents"
@@ -68,6 +67,12 @@ var __vvcAcct = program.account         // your vivocha account
   , registerMediaParams = {
       url: registerMediaUrl
     }
+
+var status = {
+  chat: true,
+  cbn: true,
+  weblead: true
+}
 
 function subscribeToVivocha () {
   request({
@@ -183,6 +188,28 @@ function unsubscribe () {
     }
   );
 }
+function unregisterMediaHook() {
+  request({
+      url : "https://" + __vvcHost + __vvcPath + "account/unregisterMediaHooks/",
+      headers : {
+        "Accept": "application/json",
+        //"Authorization": getAuth()
+      },
+      auth: {
+        username: __vvcUser,
+        password: __vvcPass
+      },
+      removeRefererHeader: true
+    },
+    function (err, res, body) {
+      if (err) {
+        console.error("unsubscribe error", err);
+      } else {
+        console.log('unsubscribe res', res.headers, body);
+      }
+    }
+  );
+}
 function processEvent(ev) {
   console.log("NEW EVENT", ev);
   switch (ev.event) {
@@ -223,14 +250,19 @@ app.all('/vivochaEvents', function(req, res, next) {
 app.all('/vivochaAgents', function(req, res, next) {
   console.log(req.query);
   // place your agents availability code here
-  res.jsonp({
-    chat: true,
-    cbn: true,
-    cbl: []
-  });
+  res.jsonp(status);
 });
 app.all('/unsubscribe', function(req, res, next) {
   unsubscribe();
+  res.jsonp({result: true, reason: "done!"});
+});
+app.all('/unregisterMediaHook', function(req, res, next) {
+  unregisterMediaHook();
+  res.jsonp({result: true, reason: "done!"});
+});
+app.all('/unsubscribeAll', function(req, res, next) {
+  unsubscribe();
+  unregisterMediaHook();
   res.jsonp({result: true, reason: "done!"});
 });
 
@@ -238,6 +270,10 @@ io.on('connection', function(socket){
   console.log('a user connected');
   socket.on('disconnect', function(){
     console.log('user disconnected');
+  });
+  socket.on('status', function(msg){
+    console.log('new status', msg);
+    status = msg;
   });
 });
 
