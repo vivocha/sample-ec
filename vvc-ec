@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+try {
+  require('./dist/index');
+} catch(e) {
+  if (e.message === "Cannot find module './dist/index'") {
+    console.log("You need to build the application before using it. Try to exec: ");
+    console.log("npm run build:all");
+  } else {
+    console.error(e);
+  }
+}

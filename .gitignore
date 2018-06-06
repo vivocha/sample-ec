@@ -1,3 +1,5 @@
+dist
+
 #ignore mac filesystem
 .DS_Store
 ._.DS_Store
@@ -9,3 +11,7 @@ node_modules*
 .project
 .settings
 .idea
+
+#cert and key files for ssl
+cert.pem
+key.pem
