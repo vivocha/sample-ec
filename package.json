@@ -1,6 +1,6 @@
 {
   "name": "@vivocha/sample-ec",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Vivocha Emebedded Console sample application",
   "scripts": {
     "clean": "[ ! -d ./dist ] || rm -rf dist/*",
