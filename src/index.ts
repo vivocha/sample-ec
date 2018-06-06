@@ -2,7 +2,6 @@
 
 import * as fs from 'fs';
 import * as util from 'util';
-import { exec } from 'child_process';
 import * as request from 'request';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
