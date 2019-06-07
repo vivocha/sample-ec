@@ -11,6 +11,7 @@ node_modules*
 .project
 .settings
 .idea
+.vscode
 
 #cert and key files for ssl
 cert.pem
